@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	interface PlausibleTracker {
 		(event: string, options?: any): void;
 	}
@@ -30,73 +30,81 @@
 		});
 	});
 
-	/**
-	 * The API host.
-	 *
-	 * @defaultValue 'https://plausible.io'
-	 */
-	export let apiHost = 'https://plausible.io';
+	interface Props {
+		/**
+		 * The API host.
+		 *
+		 * @defaultValue 'https://plausible.io'
+		 */
+		apiHost?: string;
+		/**
+		 * Compatibility mode for tracking users on Internet Explorer.
+		 *
+		 * @defaultValue false
+		 */
+		compat?: boolean;
+		/**
+		 * The domain name(s) of the website(s) to track.
+		 *
+		 * @defaultValue current hostname.
+		 */
+		domain?: string | string[];
+		/**
+		 * Enable analytics.
+		 *
+		 * @defaultValue `true` in production mode, `false` in development mode.
+		 */
+		enabled?: any;
+		/**
+		 * Automatically track file downloads
+		 * (Requires manual goal configuration on Plausible.)
+		 * @defaultValue `false`
+		 */
+		fileDownloads?: boolean;
+		/**
+		 * Automatically follow frontend navigation when using hash-based routing.
+		 *
+		 * @defaultValue `false`
+		 */
+		hash?: boolean;
+		/**
+		 * Allow analytics to track on localhost (useful in hybrid apps).
+		 * @defaultValue `false`, unless `enabled` is `true` in development mode.
+		 */
+		local?: boolean;
+		/**
+		 * Automatically track clicks on outbound links from your website.
+		 * (Requires manual goal configuration on Plausible.)
+		 * @defaultValue `false`
+		 */
+		outboundLinks?: boolean;
+	}
 
-	/**
-	 * Compatibility mode for tracking users on Internet Explorer.
-	 *
-	 * @defaultValue false
-	 */
-	export let compat = false;
+	let {
+		apiHost = 'https://plausible.io',
+		compat = false,
+		domain = $page.url.hostname,
+		enabled = !dev,
+		fileDownloads = false,
+		hash = false,
+		local = enabled && dev,
+		outboundLinks = false
+	}: Props = $props();
 
-	/**
-	 * The domain name(s) of the website(s) to track.
-	 *
-	 * @defaultValue current hostname.
-	 */
-	export let domain: string | string[] = $page.url.hostname;
-
-	/**
-	 * Enable analytics.
-	 *
-	 * @defaultValue `true` in production mode, `false` in development mode.
-	 */
-	export let enabled = !dev;
-
-	/**
-	 * Automatically track file downloads
-	 * (Requires manual goal configuration on Plausible.)
-	 * @defaultValue `false`
-	 */
-	export let fileDownloads = false;
-
-	/**
-	 * Automatically follow frontend navigation when using hash-based routing.
-	 *
-	 * @defaultValue `false`
-	 */
-	export let hash = false;
-
-	/**
-	 * Allow analytics to track on localhost (useful in hybrid apps).
-	 * @defaultValue `false`, unless `enabled` is `true` in development mode.
-	 */
-	export let local: boolean = enabled && dev;
-
-	/**
-	 * Automatically track clicks on outbound links from your website.
-	 * (Requires manual goal configuration on Plausible.)
-	 * @defaultValue `false`
-	 */
-	export let outboundLinks = false;
-
-	$: api = `${apiHost}/api/event`;
-	$: src = [
-		`${apiHost}/js/script`,
-		compat ? 'compat' : undefined,
-		fileDownloads ? 'file-downloads' : undefined,
-		hash ? 'hash' : undefined,
-		local ? 'local' : undefined,
-		outboundLinks ? 'outbound-links' : undefined,
-		'js'
-	]
-		.filter(Boolean)
-		.join('.');
+	let api = $derived(`${apiHost}/api/event`);
+	let src = $derived(
+		[
+			`${apiHost}/js/script`,
+			compat ? 'compat' : undefined,
+			fileDownloads ? 'file-downloads' : undefined,
+			hash ? 'hash' : undefined,
+			local ? 'local' : undefined,
+			outboundLinks ? 'outbound-links' : undefined,
+			'js'
+		]
+			.filter(Boolean)
+			.join('.')
+	);
 </script>
 
 <svelte:head>
