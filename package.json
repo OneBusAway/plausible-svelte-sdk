@@ -1,5 +1,5 @@
 {
-	"name": "@onebusaway/svelte-plausible-analytics",
+	"name": "svelte-plausible-analytics",
 	"version": "1.0.0",
 	"description": "Plausible Analytics library for SvelteKit apps.",
 	"keywords": [
